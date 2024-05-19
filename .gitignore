@@ -1,0 +1,9 @@
+# Ignore data directory
+data/
+
+# Ignore Python cache and virtual environment directories
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env/
