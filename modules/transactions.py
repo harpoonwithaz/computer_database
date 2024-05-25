@@ -20,37 +20,53 @@ def initialize_dataframe():
     except FileNotFoundError:
         print('Data file not found, creating new CSV file')
         df = pd.DataFrame(columns = df_columns)
-        df.to_csv(csv_location)
+        df.to_csv(csv_location, index=False)
     return df
 
 # Function to add a purchase to the transactions CSV
-def add_purchase(transaction_date, description, vendor, price : float, business_spent : float, personal_spent : float, paid : bool):  
+def add_transaction(transaction_date: str, 
+                    description: str, 
+                    transaction_type: str,
+                    vendor: str, 
+                    price: float, 
+                    business_money: float, 
+                    personal_money: float, 
+                    paid: bool):
     '''
-    Function to add a purchase to the transactions CSV
-    Returns: Dataframe containing the added data
+    Function to add a purchase to the transactions dataframe
+    -> Returns: Dataframe containing the added record
+    
+    Params:
+    - Transaction type: (Purchase, sale, payment)
+    - Transaction date: (Date of transaction "d/m/y")
+    - Description: (Name of what purchased, if sale then PC ID, if payment then description of what was purchased)
+    - Vendor: (Facebook Marketplace, EBAY, Best Buy, etc.)
+    - Price: (100, 500, 350, etc.)
+    - Business money: (How much spent or earned)
+    - Personal money: (How much spent or earned)
+    - Paid (True, False)
     '''
+    # Creates a new dateframe with existing date if there was any
     df = initialize_dataframe()
     
     # Appends purchase data to dictionary
-    new_purchase = {
+    new_record = {
         'Last Modified': datetime.now().strftime("%d/%m/%Y"), # Gets the current date when the command is executed
         'Transaction Date': transaction_date,
-        'Transaction Type': 'Purchase',
+        'Transaction Type': transaction_type,
         'Description': description,
         'Vendor': vendor,
         'Price': price,
-        'Business Money': business_spent,
-        'Personal Money': personal_spent,
+        'Business Money': business_money,
+        'Personal Money': personal_money,
         'Paid': paid,
     }
 
-    # Appends the data from the dictionary to the dataframe and adds the data to the csv
-    df = df._append(new_purchase, ignore_index = True)
-    df.to_csv(csv_location, index = False)
-
+    # Appends the data from the dictionary to the dataframe and returns
+    df = df._append(new_record, ignore_index = True)
     return df
     
-def add_sale(transaction_date, computer, price):
+def add_sale(transaction_date : str, computer : str, price : str):
     '''
     Function to add a sale to the transactions CSV
     Returns: Dataframe containing the added data
@@ -58,7 +74,7 @@ def add_sale(transaction_date, computer, price):
     df = initialize_dataframe()
 
     # Appends sale data to dictionary
-    new_purchase = {
+    new_sale = {
         'Last Modified': datetime.now().strftime("%d/%m/%Y"), # Gets the current date when the command is executed
         'Transaction Date': transaction_date,
         'Transaction Type': 'Purchase',
@@ -69,3 +85,6 @@ def add_sale(transaction_date, computer, price):
         'Personal Money': 0.00,
         'Paid': True,
     }
+
+    df = df._append(new_sale, ignore_index = True)
+    df.to_csv(csv_location, index = False)
